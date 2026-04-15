@@ -7,11 +7,13 @@ export default function AppLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-background">
-      <main className="pb-20 max-w-lg mx-auto">
-        <PageTransition>{children}</PageTransition>
-      </main>
-      <BottomNav />
+    <div className="min-h-screen bg-background flex flex-col items-center">
+      <div className="w-full max-w-[448px]">
+        <main className="pb-20">
+          <PageTransition>{children}</PageTransition>
+        </main>
+        <BottomNav />
+      </div>
     </div>
   );
 }

@@ -19,8 +19,8 @@ export function BottomNav() {
   const [unreadCount] = useState(3);
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-t border-rose-100 safe-area-bottom">
-      <div className="flex items-center justify-around max-w-lg mx-auto h-16">
+    <nav className="sticky bottom-0 z-50 bg-white/80 backdrop-blur-xl border-t border-rose-100 safe-area-bottom">
+      <div className="flex items-center justify-around h-16">
         {navItems.map((item) => {
           const isActive =
             pathname === item.href || pathname.startsWith(item.href + "/");
