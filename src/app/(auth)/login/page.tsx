@@ -36,7 +36,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex-1 flex flex-col px-6 py-8">
+    <div className="w-full">
       <Link href="/" className="self-start mb-8">
         <ArrowLeft className="w-6 h-6 text-muted-foreground" />
       </Link>
