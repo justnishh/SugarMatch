@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 export default function SplashPage() {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center px-6 py-12">
+    <div className="flex flex-col items-center justify-center h-full text-center px-6 py-12 w-full">
       <motion.div
         initial={{ scale: 0, rotate: -180 }}
         animate={{ scale: 1, rotate: 0 }}

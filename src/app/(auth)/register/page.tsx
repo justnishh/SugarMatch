@@ -6,14 +6,15 @@ import { ArrowLeft, Search, Diamond } from "lucide-react";
 
 export default function RegisterPage() {
   return (
-    <div className="flex-1 flex flex-col px-6 py-8">
-      <Link href="/" className="self-start mb-8">
+    <div className="flex flex-col items-center justify-center h-full text-center w-full">
+      <Link href="/" className="absolute left-0 top-0 p-4">
         <ArrowLeft className="w-6 h-6 text-muted-foreground" />
       </Link>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-sm"
       >
         <h1 className="text-3xl font-bold mb-2">Who are you?</h1>
         <p className="text-muted-foreground mb-10">
@@ -21,7 +22,7 @@ export default function RegisterPage() {
         </p>
       </motion.div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 w-full max-w-sm">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}

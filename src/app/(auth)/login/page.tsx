@@ -36,17 +36,17 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="w-full">
-      <Link href="/" className="self-start mb-8">
+    <div className="flex flex-col items-center justify-center h-full text-center w-full">
+      <Link href="/" className="self-start mb-8 absolute left-0 top-0">
         <ArrowLeft className="w-6 h-6 text-muted-foreground" />
       </Link>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex-1 flex flex-col"
+        className="w-full max-w-sm"
       >
-        <div className="flex items-center gap-3 mb-2">
+        <div className="flex items-center justify-center gap-3 mb-2">
           <Heart className="w-8 h-8 text-rose-500" fill="currentColor" />
           <h1 className="text-3xl font-bold">Welcome back</h1>
         </div>

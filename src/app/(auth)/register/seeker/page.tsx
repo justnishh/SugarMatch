@@ -150,9 +150,9 @@ export default function SeekerRegistrationPage() {
   }
 
   return (
-    <div className="flex-1 flex flex-col px-6 py-8">
+    <div className="flex flex-col items-center justify-center h-full text-center w-full">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex items-center gap-4 mb-6 w-full max-w-sm">
         {step > 0 ? (
           <button onClick={() => setStep(step - 1)}>
             <ArrowLeft className="w-6 h-6 text-muted-foreground" />
@@ -174,7 +174,7 @@ export default function SeekerRegistrationPage() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.2 }}
-          className="flex-1 flex flex-col"
+          className="flex flex-col w-full max-w-sm"
         >
           {/* Step 0: Account */}
           {step === 0 && (
