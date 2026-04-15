@@ -19,6 +19,22 @@ export function MatchModal({
   onChat,
   onContinue,
 }: MatchModalProps) {
+  const confettiParticles = [...Array(20)].map((_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    rotate: Math.random() * 720,
+    duration: 2 + Math.random(),
+    color: ["#fbbf24", "#f472b6", "#60a5fa", "#a78bfa", "#34d399"][i % 5],
+  }));
+
+  const floatingHearts = [...Array(8)].map((_, i) => ({
+    id: i,
+    xStart: (i + 1) * 10,
+    xEnd: (i + 1) * 10 + (Math.random() - 0.5) * 20,
+    duration: 3 + Math.random() * 2,
+    delay: Math.random() * 2,
+  }));
   return (
     <AnimatePresence>
       {open && (
@@ -30,9 +46,9 @@ export function MatchModal({
         >
           {/* Confetti particles */}
           <AnimatePresence>
-            {[...Array(20)].map((_, i) => (
+            {confettiParticles.map((particle) => (
               <motion.div
-                key={i}
+                key={particle.id}
                 initial={{
                   opacity: 1,
                   x: "50vw",
@@ -41,18 +57,18 @@ export function MatchModal({
                 }}
                 animate={{
                   opacity: 0,
-                  x: `${Math.random() * 100}vw`,
-                  y: `${Math.random() * 100}vh`,
-                  rotate: Math.random() * 720,
+                  x: `${particle.x}vw`,
+                  y: `${particle.y}vh`,
+                  rotate: particle.rotate,
                   scale: 1,
                 }}
                 transition={{
-                  duration: 2 + Math.random(),
+                  duration: particle.duration,
                   ease: "easeOut",
                 }}
                 className="absolute w-3 h-3 rounded-full"
                 style={{
-                  backgroundColor: ["#fbbf24", "#f472b6", "#60a5fa", "#a78bfa", "#34d399"][i % 5],
+                  backgroundColor: particle.color,
                 }}
               />
             ))}
@@ -64,19 +80,19 @@ export function MatchModal({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            {[...Array(8)].map((_, i) => (
+            {floatingHearts.map((heart) => (
               <motion.div
-                key={i}
-                initial={{ opacity: 0, y: "100vh", x: `${(i + 1) * 10}%` }}
+                key={heart.id}
+                initial={{ opacity: 0, y: "100vh", x: `${heart.xStart}%` }}
                 animate={{
                   opacity: [0, 1, 1, 0],
                   y: ["100vh", "-10vh"],
-                  x: [`${(i + 1) * 10}%`, `${(i + 1) * 10 + (Math.random() - 0.5) * 20}%`],
+                  x: [`${heart.xStart}%`, `${heart.xEnd}%`],
                 }}
                 transition={{
-                  duration: 3 + Math.random() * 2,
+                  duration: heart.duration,
                   repeat: Infinity,
-                  delay: Math.random() * 2,
+                  delay: heart.delay,
                 }}
                 className="absolute text-white/20"
               >
@@ -108,7 +124,7 @@ export function MatchModal({
             transition={{ delay: 0.3 }}
             className="text-5xl font-bold text-white text-center mb-2"
           >
-            It's a Match!
+            It&apos;s a Match!
           </motion.h2>
 
           <motion.p

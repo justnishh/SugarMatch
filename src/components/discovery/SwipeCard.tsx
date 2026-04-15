@@ -23,10 +23,13 @@ export function SwipeCard({ profile, onSwipe, style }: SwipeCardProps) {
   const likeOpacity = useTransform(x, [0, 100], [0, 1]);
   const passOpacity = useTransform(x, [-100, 0], [1, 0]);
 
-  const age = Math.floor(
-    (Date.now() - new Date(profile.dob).getTime()) /
-      (365.25 * 24 * 60 * 60 * 1000)
-  );
+  const dob = new Date(profile.dob);
+  const now = new Date();
+  let age = now.getFullYear() - dob.getFullYear();
+  const monthDiff = now.getMonth() - dob.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < dob.getDate())) {
+    age--;
+  }
 
   function handleDragEnd(_: unknown, info: PanInfo) {
     if (info.offset.x > 100) {
