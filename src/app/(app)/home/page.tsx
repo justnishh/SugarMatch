@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 import { Heart, X, Star, SlidersHorizontal, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { SwipeCard } from "@/components/discovery/SwipeCard";
 import { MatchModal } from "@/components/discovery/MatchModal";
 import { getDiscoveryFeed } from "@/lib/actions/discovery";
@@ -118,8 +119,20 @@ export default function HomePage() {
       {/* Card stack */}
       <div className="flex-1 px-4 pb-4 relative">
         {loading ? (
-          <div className="flex items-center justify-center h-full">
-            <Loader2 className="w-8 h-8 animate-spin text-rose-400" />
+          <div className="flex flex-col items-center justify-center h-full gap-4">
+            <div className="relative w-full max-w-sm aspect-[3/4] rounded-3xl overflow-hidden">
+              <Skeleton className="w-full h-full rounded-3xl" />
+              <div className="absolute bottom-8 left-8 right-8 space-y-3">
+                <Skeleton className="h-8 w-3/4 rounded-lg" />
+                <Skeleton className="h-4 w-1/2 rounded-lg" />
+                <Skeleton className="h-4 w-2/3 rounded-lg" />
+              </div>
+            </div>
+            <div className="flex gap-4">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="w-14 h-14 rounded-full" />
+              ))}
+            </div>
           </div>
         ) : !currentProfile ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-8">
