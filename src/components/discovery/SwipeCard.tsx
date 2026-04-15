@@ -20,7 +20,6 @@ interface SwipeCardProps {
 export function SwipeCard({ profile, onSwipe, style }: SwipeCardProps) {
   const [photoIndex, setPhotoIndex] = useState(0);
   const x = useMotionValue(0);
-  const rotate = useTransform(x, [-200, 200], [-15, 15]);
   const likeOpacity = useTransform(x, [0, 100], [0, 1]);
   const passOpacity = useTransform(x, [-100, 0], [1, 0]);
 
@@ -43,7 +42,7 @@ export function SwipeCard({ profile, onSwipe, style }: SwipeCardProps) {
   return (
     <motion.div
       className="absolute inset-0 cursor-grab active:cursor-grabbing"
-      style={{ x, rotate, ...style }}
+      style={{ x, ...style }}
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.7}
