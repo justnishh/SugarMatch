@@ -13,8 +13,10 @@ import { StepIndicator } from "@/components/onboarding/StepIndicator";
 import { PhotoUploader } from "@/components/onboarding/PhotoUploader";
 import { ProfilePreview } from "@/components/onboarding/ProfilePreview";
 import { createClient } from "@/lib/supabase/client";
+import { useGeolocation } from "@/lib/hooks/useGeolocation";
 import { toast } from "sonner";
 import type { Gender } from "@/types/database";
+import { MapPin } from "lucide-react";
 
 const TOTAL_STEPS = 5;
 
@@ -22,6 +24,7 @@ export default function SeekerRegistrationPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
+  const { detect, loading: locationLoading, location } = useGeolocation();
 
   // Step 1: Account
   const [email, setEmail] = useState("");
@@ -317,6 +320,27 @@ export default function SeekerRegistrationPage() {
                   />
                 </div>
               </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={async () => {
+                  const loc = await detect();
+                  if (loc) {
+                    if (loc.city) setCity(loc.city);
+                    if (loc.country) setCountry(loc.country);
+                    toast.success(`Location detected: ${loc.city}, ${loc.country}`);
+                  }
+                }}
+                disabled={locationLoading}
+                className="w-full"
+              >
+                {locationLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                ) : (
+                  <MapPin className="w-4 h-4 mr-2" />
+                )}
+                Detect My Location
+              </Button>
             </div>
           )}
 

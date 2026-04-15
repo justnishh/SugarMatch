@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +14,7 @@ import { StepIndicator } from "@/components/onboarding/StepIndicator";
 import { PhotoUploader } from "@/components/onboarding/PhotoUploader";
 import { ProfilePreview } from "@/components/onboarding/ProfilePreview";
 import { createClient } from "@/lib/supabase/client";
+import { useGeolocation } from "@/lib/hooks/useGeolocation";
 import { toast } from "sonner";
 import type { Gender, ConditionTag } from "@/types/database";
 
@@ -31,6 +32,7 @@ export default function PartnerRegistrationPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
+  const { detect, loading: locationLoading } = useGeolocation();
 
   // Step 0: Account
   const [email, setEmail] = useState("");
@@ -336,6 +338,27 @@ export default function PartnerRegistrationPage() {
                   />
                 </div>
               </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={async () => {
+                  const loc = await detect();
+                  if (loc) {
+                    if (loc.city) setCity(loc.city);
+                    if (loc.country) setCountry(loc.country);
+                    toast.success(`Location detected: ${loc.city}, ${loc.country}`);
+                  }
+                }}
+                disabled={locationLoading}
+                className="w-full"
+              >
+                {locationLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                ) : (
+                  <MapPin className="w-4 h-4 mr-2" />
+                )}
+                Detect My Location
+              </Button>
             </div>
           )}
 
