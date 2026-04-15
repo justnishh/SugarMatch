@@ -96,7 +96,7 @@ export default function ChatPage() {
 
   async function handleSend(
     content: string,
-    type: "text" | "image" = "text",
+    type: "text" | "image" | "voice" = "text",
     mediaUrl?: string
   ) {
     const result = await sendMessage(matchId, content, type, mediaUrl);
