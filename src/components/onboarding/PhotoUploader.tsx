@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef } from "react";
-import { Plus, X } from "lucide-react";
+import { useRef, useState } from "react";
+import { Plus, X, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface PhotoUploaderProps {
   photos: File[];
@@ -11,6 +12,14 @@ interface PhotoUploaderProps {
   maxPhotos?: number;
 }
 
+const photoTips = [
+  "Use clear, well-lit photos where your face is visible",
+  "Add a mix of full-body and portrait shots",
+  "Show your personality with hobbies or activities",
+  "Avoid heavily filtered or blurry images",
+  "Your first photo should be a clear headshot",
+];
+
 export function PhotoUploader({
   photos,
   onAdd,
@@ -18,6 +27,7 @@ export function PhotoUploader({
   maxPhotos = 6,
 }: PhotoUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [showTips, setShowTips] = useState(false);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || []);
@@ -28,9 +38,46 @@ export function PhotoUploader({
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-muted-foreground">
-        Add at least 2 photos (max {maxPhotos})
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          Add at least 2 photos (max {maxPhotos})
+        </p>
+        <button
+          type="button"
+          onClick={() => setShowTips(!showTips)}
+          className="text-xs text-rose-500 font-medium flex items-center gap-1"
+        >
+          <motion.span
+            animate={{ rotate: showTips ? 180 : 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <ChevronDown className="w-4 h-4" />
+          </motion.span>
+          Tips
+        </button>
+      </div>
+
+      <AnimatePresence>
+        {showTips && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-2">
+              <p className="text-xs font-medium text-amber-800">Photo Tips</p>
+              {photoTips.map((tip, i) => (
+                <p key={i} className="text-xs text-amber-700 flex gap-2">
+                  <span className="font-medium">{i + 1}.</span>
+                  {tip}
+                </p>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="grid grid-cols-3 gap-3">
         {photos.map((photo, i) => (
           <div key={i} className="relative aspect-[3/4] rounded-xl overflow-hidden bg-muted">
