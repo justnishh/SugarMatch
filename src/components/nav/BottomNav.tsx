@@ -29,16 +29,16 @@ export function BottomNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all relative",
+                "flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all relative cursor-pointer",
                 isActive
-                  ? "text-rose-500"
+                  ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
               {isActive && (
                 <motion.div
                   layoutId="activeIndicator"
-                  className="absolute -top-3 left-1/2 -translate-x-1/2 w-10 h-1 bg-gradient-to-r from-rose-400 to-pink-400 rounded-full"
+                  className="absolute -top-3 left-1/2 -translate-x-1/2 w-10 h-1 bg-primary rounded-full"
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}
