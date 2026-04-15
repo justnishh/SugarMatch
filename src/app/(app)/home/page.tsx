@@ -3,7 +3,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
-import { Heart, X, Star, SlidersHorizontal, Loader2 } from "lucide-react";
+import { Heart, X, Star, SlidersHorizontal, Loader2, Sparkles, RefreshCw } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SwipeCard } from "@/components/discovery/SwipeCard";
@@ -136,14 +137,46 @@ export default function HomePage() {
           </div>
         ) : !currentProfile ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-8">
-            <Heart className="w-16 h-16 text-rose-200 mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No more profiles</h3>
-            <p className="text-muted-foreground mb-6">
+            <div className="w-40 h-40 mb-6 relative">
+              <div className="absolute inset-0 bg-rose-100 rounded-full animate-pulse" />
+              <Heart className="w-20 h-20 text-rose-300 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+              <motion.div
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="absolute -top-2 -right-2"
+              >
+                <Sparkles className="w-8 h-8 text-amber-400" />
+              </motion.div>
+            </div>
+            <motion.h3 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-xl font-semibold mb-2"
+            >
+              No more profiles
+            </motion.h3>
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1 }}
+              className="text-muted-foreground mb-6"
+            >
               Check back later or adjust your filters to see more people
-            </p>
-            <Button onClick={loadFeed} variant="outline">
-              Refresh Feed
-            </Button>
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Button 
+                onClick={loadFeed} 
+                variant="outline"
+                className="border-rose-200 text-rose-600 hover:bg-rose-50"
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Refresh Feed
+              </Button>
+            </motion.div>
           </div>
         ) : (
           <div className="relative h-full max-h-[calc(100vh-220px)]">
