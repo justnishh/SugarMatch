@@ -7,9 +7,10 @@ import {
   useTransform,
   PanInfo,
 } from "framer-motion";
-import { MapPin, BadgeCheck, Briefcase, Heart, ChevronLeft, ChevronRight } from "lucide-react";
+import { MapPin, BadgeCheck, Briefcase, Heart, ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { DiscoveryProfile } from "@/types/database";
+import { cn } from "@/lib/utils";
 
 interface SwipeCardProps {
   profile: DiscoveryProfile;
@@ -22,6 +23,8 @@ export function SwipeCard({ profile, onSwipe, style }: SwipeCardProps) {
   const x = useMotionValue(0);
   const likeOpacity = useTransform(x, [0, 100], [0, 1]);
   const passOpacity = useTransform(x, [-100, 0], [1, 0]);
+  const superlikeOpacity = useTransform(x, [-150, -50, 0], [1, 0.5, 0]);
+  const cardRotate = useTransform(x, [-200, 0, 200], [-20, 0, 20]);
 
   const dob = new Date(profile.dob);
   const now = new Date();
@@ -45,20 +48,23 @@ export function SwipeCard({ profile, onSwipe, style }: SwipeCardProps) {
   return (
     <motion.div
       className="absolute inset-0 cursor-grab active:cursor-grabbing"
-      style={{ x, ...style }}
+      style={{ x, rotate: cardRotate, ...style }}
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.7}
       onDragEnd={handleDragEnd}
       whileDrag={{ scale: 1.02 }}
+      whileHover={{ scale: 1.01 }}
       exit={{
-        x: x.get() > 0 ? 300 : -300,
+        x: x.get() > 0 ? 500 : -500,
         opacity: 0,
+        rotate: x.get() > 0 ? 30 : -30,
         transition: { duration: 0.3 },
       }}
     >
-      <div className="w-full h-full rounded-3xl overflow-hidden bg-white shadow-2xl border relative select-none">
-        {/* Photo */}
+      <div className="w-full h-full rounded-3xl overflow-hidden bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 relative select-none">
+        {/* Depth gradient overlay for stacked cards */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/5 rounded-3xl pointer-events-none z-10" />
         <div className="absolute inset-0 bg-muted">
           {currentPhoto && (
             <img
@@ -73,9 +79,9 @@ export function SwipeCard({ profile, onSwipe, style }: SwipeCardProps) {
         {/* Photo navigation dots */}
         {photos.length > 1 && (
           <div className="absolute top-4 left-4 right-4 flex gap-1 z-10">
-            {photos.map((_, i) => (
+            {photos.map((p, i) => (
               <div
-                key={i}
+                key={p.id}
                 className={`h-1 flex-1 rounded-full ${
                   i === photoIndex ? "bg-white" : "bg-white/40"
                 }`}
@@ -124,6 +130,15 @@ export function SwipeCard({ profile, onSwipe, style }: SwipeCardProps) {
           style={{ opacity: passOpacity }}
         >
           <span className="text-3xl font-black text-red-500">NOPE</span>
+        </motion.div>
+        <motion.div
+          className="absolute top-8 left-1/2 -translate-x-1/2 z-20"
+          style={{ opacity: superlikeOpacity }}
+        >
+          <div className="bg-blue-500 rounded-full px-4 py-2 flex items-center gap-2 shadow-lg">
+            <Star className="w-5 h-5 text-white fill-white" />
+            <span className="text-xl font-black text-white">SUPER LIKE</span>
+          </div>
         </motion.div>
 
         {/* Info overlay */}
