@@ -41,7 +41,7 @@ export default function EditProfilePage() {
   const [budgetMax, setBudgetMax] = useState("");
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
-  const { detecting, detect } = useGeolocation();
+  const { loading: detecting, detect } = useGeolocation();
 
   useEffect(() => {
     async function load() {

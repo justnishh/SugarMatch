@@ -24,7 +24,7 @@ export default function SeekerRegistrationPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
-  const { detecting, detect } = useGeolocation();
+  const { loading: detecting, detect } = useGeolocation();
 
   // Step 1: Account
   const [email, setEmail] = useState("");

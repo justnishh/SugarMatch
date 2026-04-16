@@ -34,7 +34,7 @@ export default function SettingsPage() {
   const [ageRange, setAgeRange] = useState([18, 60]);
   const [distance, setDistance] = useState(50);
   const [isHidden, setIsHidden] = useState(false);
-  const { detecting, detect } = useGeolocation();
+  const { loading: detecting, detect } = useGeolocation();
 
   useEffect(() => {
     async function load() {
