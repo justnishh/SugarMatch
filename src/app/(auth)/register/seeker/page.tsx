@@ -24,7 +24,7 @@ export default function SeekerRegistrationPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
-  const { detect, loading: locationLoading, location } = useGeolocation();
+  const { detecting, detect } = useGeolocation();
 
   // Step 1: Account
   const [email, setEmail] = useState("");
@@ -331,10 +331,10 @@ export default function SeekerRegistrationPage() {
                     toast.success(`Location detected: ${loc.city}, ${loc.country}`);
                   }
                 }}
-                disabled={locationLoading}
+                disabled={detecting}
                 className="w-full"
               >
-                {locationLoading ? (
+                {detecting ? (
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
                 ) : (
                   <MapPin className="w-4 h-4 mr-2" />

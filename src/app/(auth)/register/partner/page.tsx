@@ -32,7 +32,7 @@ export default function PartnerRegistrationPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
-  const { detect, loading: locationLoading } = useGeolocation();
+  const { detecting, detect } = useGeolocation();
 
   // Step 0: Account
   const [email, setEmail] = useState("");
@@ -51,7 +51,6 @@ export default function PartnerRegistrationPage() {
   const [country, setCountry] = useState("");
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
-  const { detecting, detect } = useGeolocation();
 
   // Step 3: Bio
   const [bio, setBio] = useState("");
@@ -380,10 +379,10 @@ export default function PartnerRegistrationPage() {
                     toast.success(`Location detected: ${loc.city}, ${loc.country}`);
                   }
                 }}
-                disabled={locationLoading}
+                disabled={detecting}
                 className="w-full"
               >
-                {locationLoading ? (
+                {detecting ? (
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
                 ) : (
                   <MapPin className="w-4 h-4 mr-2" />
