@@ -10,7 +10,6 @@ import {
 import { MapPin, BadgeCheck, Briefcase, Heart, ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { DiscoveryProfile } from "@/types/database";
-import { cn } from "@/lib/utils";
 
 interface SwipeCardProps {
   profile: DiscoveryProfile;
@@ -20,13 +19,15 @@ interface SwipeCardProps {
 
 export function SwipeCard({ profile, onSwipe, style }: SwipeCardProps) {
   const [photoIndex, setPhotoIndex] = useState(0);
+  const [isExiting, setIsExiting] = useState(false);
+  const [exitDir, setExitDir] = useState<"left" | "right" | "up" | null>(null);
+  
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const likeOpacity = useTransform(x, [50, 150], [0, 1]);
   const passOpacity = useTransform(x, [-150, -50], [1, 0]);
   const superlikeOpacity = useTransform(y, [-50, -150], [0, 1]);
   const cardRotate = useTransform(x, [-200, 0, 200], [-25, 0, 25]);
-  const superlikeRotate = useTransform(y, [0, -200], [0, -15]);
 
   const dob = new Date(profile.dob);
   const now = new Date();
@@ -36,46 +37,40 @@ export function SwipeCard({ profile, onSwipe, style }: SwipeCardProps) {
     age--;
   }
 
+  function triggerExit(direction: "left" | "right" | "up") {
+    if (isExiting) return;
+    setIsExiting(true);
+    setExitDir(direction);
+    
+    const swipeDir = direction === "up" ? "superlike" : direction === "right" ? "like" : "pass";
+    
+    setTimeout(() => {
+      onSwipe(swipeDir);
+    }, 350);
+  }
+
   function handleDragEnd(_: unknown, info: PanInfo) {
     const dragX = info.offset.x;
     const dragY = info.offset.y;
 
     if (dragY < -120 && Math.abs(dragX) < 80) {
-      onSwipe("superlike");
+      triggerExit("up");
     } else if (dragX > 100) {
-      onSwipe("like");
+      triggerExit("right");
     } else if (dragX < -100) {
-      onSwipe("pass");
+      triggerExit("left");
     }
   }
 
-  const getExitAnimation = (): { x?: number; y?: number; rotate?: number; opacity?: number; scale?: number; transition?: { duration: number } } => {
-    const currentX = x.get();
-    const currentY = y.get();
-
-    if (currentY < -100) {
-      return {
-        y: -1200,
-        x: currentX * 0.5,
-        rotate: -30,
-        opacity: 0,
-        scale: 1.2,
-        transition: { duration: 0.5 },
-      };
-    } else if (currentX > 50) {
-      return {
-        x: 500,
-        rotate: 30,
-        opacity: 0,
-        transition: { duration: 0.3 },
-      };
+  const getExitStyle = () => {
+    if (!exitDir) return {};
+    
+    if (exitDir === "up") {
+      return { x: 0, y: -1200, rotate: -30, scale: 1.2, opacity: 0 };
+    } else if (exitDir === "right") {
+      return { x: 500, rotate: 30, opacity: 0 };
     } else {
-      return {
-        x: -500,
-        rotate: -30,
-        opacity: 0,
-        transition: { duration: 0.3 },
-      };
+      return { x: -500, rotate: -30, opacity: 0 };
     }
   };
 
@@ -85,14 +80,15 @@ export function SwipeCard({ profile, onSwipe, style }: SwipeCardProps) {
   return (
     <motion.div
       className="absolute inset-0 cursor-grab active:cursor-grabbing"
-      style={{ x, y, rotate: cardRotate, ...style }}
-      drag="x"
-      dragConstraints={{ left: 0, right: 0, top: -300, bottom: 0 }}
+      style={{ x: isExiting ? undefined : x, y: isExiting ? undefined : y, ...style }}
+      animate={isExiting ? getExitStyle() : undefined}
+      transition={isExiting ? { duration: 0.35, ease: "easeOut" } : {}}
+      drag={!isExiting ? "x" : false}
+      dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.7}
-      onDragEnd={handleDragEnd}
+      onDragEnd={!isExiting ? handleDragEnd : undefined}
       whileDrag={{ scale: 1.02 }}
       whileHover={{ scale: 1.01 }}
-      exit={getExitAnimation()}
     >
       <div className="w-full h-full rounded-3xl overflow-hidden bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 relative select-none">
         {/* Depth gradient overlay for stacked cards */}

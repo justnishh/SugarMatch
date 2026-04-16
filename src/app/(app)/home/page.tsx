@@ -180,7 +180,7 @@ export default function HomePage() {
           </div>
         ) : (
           <div className="relative h-full max-h-[calc(100vh-220px)]">
-            <AnimatePresence>
+            <AnimatePresence mode="popLayout">
               {/* Show current and next card */}
               {profiles
                 .slice(currentIndex, currentIndex + 2)
@@ -192,8 +192,10 @@ export default function HomePage() {
                     onSwipe={(dir) => {
                       if (dir === "superlike") {
                         handleSuperLike();
+                      } else if (dir === "like") {
+                        handleSwipe("like");
                       } else {
-                        handleSwipe(dir);
+                        handleSwipe("pass");
                       }
                     }}
                     style={{
