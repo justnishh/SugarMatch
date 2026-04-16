@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   motion,
   useMotionValue,
@@ -37,7 +37,7 @@ export function SwipeCard({ profile, onSwipe, style }: SwipeCardProps) {
     age--;
   }
 
-  function triggerExit(direction: "left" | "right" | "up") {
+  const triggerExit = useCallback((direction: "left" | "right" | "up") => {
     if (isExiting) return;
     setIsExiting(true);
     setExitDir(direction);
@@ -46,8 +46,8 @@ export function SwipeCard({ profile, onSwipe, style }: SwipeCardProps) {
     
     setTimeout(() => {
       onSwipe(swipeDir);
-    }, 350);
-  }
+    }, 400);
+  }, [isExiting, onSwipe]);
 
   function handleDragEnd(_: unknown, info: PanInfo) {
     const dragX = info.offset.x;
@@ -66,11 +66,11 @@ export function SwipeCard({ profile, onSwipe, style }: SwipeCardProps) {
     if (!exitDir) return {};
     
     if (exitDir === "up") {
-      return { x: 0, y: -1200, rotate: -30, scale: 1.2, opacity: 0 };
+      return { y: -1000, rotate: -25, scale: 1.3, opacity: 0 };
     } else if (exitDir === "right") {
-      return { x: 500, rotate: 30, opacity: 0 };
+      return { x: 600, rotate: 25, opacity: 0 };
     } else {
-      return { x: -500, rotate: -30, opacity: 0 };
+      return { x: -600, rotate: -25, opacity: 0 };
     }
   };
 
@@ -80,15 +80,14 @@ export function SwipeCard({ profile, onSwipe, style }: SwipeCardProps) {
   return (
     <motion.div
       className="absolute inset-0 cursor-grab active:cursor-grabbing"
-      style={{ x: isExiting ? undefined : x, y: isExiting ? undefined : y, ...style }}
+      style={{ x, y, ...style }}
       animate={isExiting ? getExitStyle() : undefined}
-      transition={isExiting ? { duration: 0.35, ease: "easeOut" } : {}}
-      drag={!isExiting ? "x" : false}
+      transition={isExiting ? { duration: 0.4, ease: "easeOut" } : { type: "spring", bounce: 0.2, duration: 0.5 }}
+      drag={!isExiting}
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.7}
       onDragEnd={!isExiting ? handleDragEnd : undefined}
-      whileDrag={{ scale: 1.02 }}
-      whileHover={{ scale: 1.01 }}
+      whileDrag={{ scale: 1.05 }}
     >
       <div className="w-full h-full rounded-3xl overflow-hidden bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 relative select-none">
         {/* Depth gradient overlay for stacked cards */}
