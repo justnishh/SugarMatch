@@ -502,6 +502,54 @@ end;
 $$ language plpgsql security definer;
 
 -- ============================================
+-- ============================================
+-- ICEBREAKERS (Conversation Starters)
+-- ============================================
+create table public.icebreakers (
+  id uuid primary key default gen_random_uuid(),
+  role text not null check (role in ('seeker', 'partner')),
+  text text not null,
+  created_at timestamptz default now()
+);
+
+-- Enable realtime
+alter publication supabase_realtime add table public.icebreakers;
+
+-- Insert default icebreakers for seekers
+insert into public.icebreakers (role, text) values
+  ('seeker', "What's your idea of a perfect first date?"),
+  ('seeker', 'Tell me about your last trip'),
+  ('seeker', 'What are you looking for in a partner?'),
+  ('seeker', "What's your favorite restaurant in the city?"),
+  ('seeker', 'Any exciting plans coming up?');
+
+-- Insert default icebreakers for partners
+insert into public.icebreakers (role, text) values
+  ('partner', "What's your idea of a perfect first date?"),
+  ('partner', 'Tell me about your latest vacation'),
+  ('partner', "What's your typical weekend like?"),
+  ('partner', "What's your favorite thing about being a partner?"),
+  ('partner', 'Any travel plans this year?');
+
+-- ============================================
+-- USER ACTIVITY STATUS
+-- ============================================
+alter table public.users add column last_active_at timestamptz;
+
+-- Function to update last_active_at
+create or replace function public.update_user_activity()
+returns trigger as $$
+begin
+  new.last_active_at = now();
+  return new;
+end;
+$$ language plpgsql;
+
+create trigger on_user_activity
+  before update on public.users
+  for each row execute function public.update_user_activity();
+
+-- ============================================
 -- REALTIME
 -- ============================================
 -- Enable realtime for messages and notifications

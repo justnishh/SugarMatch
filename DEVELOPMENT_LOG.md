@@ -11,6 +11,17 @@ This document tracks all development work on the SugarMatch (SugerFinds) dating 
 
 ---
 
+## In Progress
+
+### Chat & Match UX Enhancements (April 16, 2026)
+- **Icebreakers**: Pre-defined conversation starters after match
+- **Activity Status**: Online/Away/Offline indicators
+- **Profile Preview**: Quick view in chat without leaving
+- **Voice Messages**: Record and send voice notes
+- Spec: `docs/superpowers/specs/2026-04-16-chat-enhancements-spec.md`
+
+---
+
 ## Work Completed
 
 ### Phase 1: Core App (Initial Build)
