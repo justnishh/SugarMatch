@@ -46,7 +46,7 @@ export function SwipeCard({ profile, onSwipe, style }: SwipeCardProps) {
     
     setTimeout(() => {
       onSwipe(swipeDir);
-    }, 400);
+    }, 450);
   }, [isExiting, onSwipe]);
 
   function handleDragEnd(_: unknown, info: PanInfo) {

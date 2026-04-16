@@ -65,7 +65,6 @@ export default function HomePage() {
     setCurrentIndex((prev) => prev + 1);
     setSwiping(false);
 
-    // Load more when running low
     if (currentIndex >= profiles.length - 3) {
       const more = await getDiscoveryFeed(20, profiles.length);
       setProfiles((prev) => [...prev, ...more]);
