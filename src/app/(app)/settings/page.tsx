@@ -208,13 +208,26 @@ export default function SettingsPage() {
       {/* Menu items */}
       <div className="space-y-1">
         {[
-          { icon: Bell, label: "Notifications", href: "#" },
-          { icon: Shield, label: "Safety & Reporting", href: "#" },
-          { icon: HelpCircle, label: "Help & Support", href: "#" },
+          { 
+            icon: Bell, 
+            label: "Notifications", 
+            action: () => router.push("/notifications")
+          },
+          { 
+            icon: Shield, 
+            label: "Safety and Reporting", 
+            action: () => alert("Safety and Reporting feature coming soon!")
+          },
+          { 
+            icon: HelpCircle, 
+            label: "Help and Support", 
+            action: () => alert("Help and Support: Contact us at support@sugarfinds.com")
+          },
         ].map((item) => (
           <button
             key={item.label}
-            className="w-full flex items-center gap-3 px-3 py-3.5 rounded-xl hover:bg-muted transition-all"
+            onClick={item.action}
+            className="w-full flex items-center gap-3 px-3 py-3.5 rounded-xl hover:bg-muted transition-all cursor-pointer"
           >
             <item.icon className="w-5 h-5 text-muted-foreground" />
             <span className="flex-1 text-left text-sm font-medium">

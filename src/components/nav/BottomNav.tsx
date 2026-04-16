@@ -35,13 +35,13 @@ export function BottomNav() {
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              {isActive && (
-                <motion.div
-                  layoutId="activeIndicator"
-                  className="absolute -top-3 left-1/2 -translate-x-1/2 w-10 h-1 bg-gradient-to-r from-rose-400 to-pink-400 rounded-full"
-                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                />
-              )}
+              <div
+                className={cn(
+                  "absolute -top-0.5 left-1/2 -translate-x-1/2 w-8 h-1 bg-gradient-to-r from-rose-400 to-pink-400 rounded-full transition-all duration-300",
+                  !isActive && "opacity-0 scale-x-0",
+                  isActive && "opacity-100 scale-x-100"
+                )}
+              />
               <motion.div
                 whileTap={{ scale: 0.9 }}
                 className="relative"
