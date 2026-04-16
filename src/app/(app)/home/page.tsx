@@ -189,7 +189,13 @@ export default function HomePage() {
                   <SwipeCard
                     key={profile.id}
                     profile={profile}
-                    onSwipe={handleSwipe}
+                    onSwipe={(dir) => {
+                      if (dir === "superlike") {
+                        handleSuperLike();
+                      } else {
+                        handleSwipe(dir);
+                      }
+                    }}
                     style={{
                       zIndex: profiles.length - currentIndex - i,
                       scale: i === 0 ? 0.95 : 1,

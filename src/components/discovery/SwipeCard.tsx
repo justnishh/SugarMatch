@@ -14,17 +14,19 @@ import { cn } from "@/lib/utils";
 
 interface SwipeCardProps {
   profile: DiscoveryProfile;
-  onSwipe: (direction: "like" | "pass") => void;
+  onSwipe: (direction: "like" | "pass" | "superlike") => void;
   style?: React.CSSProperties;
 }
 
 export function SwipeCard({ profile, onSwipe, style }: SwipeCardProps) {
   const [photoIndex, setPhotoIndex] = useState(0);
   const x = useMotionValue(0);
-  const likeOpacity = useTransform(x, [0, 100], [0, 1]);
-  const passOpacity = useTransform(x, [-100, 0], [1, 0]);
-  const superlikeOpacity = useTransform(x, [-150, -50, 0], [1, 0.5, 0]);
-  const cardRotate = useTransform(x, [-200, 0, 200], [-20, 0, 20]);
+  const y = useMotionValue(0);
+  const likeOpacity = useTransform(x, [50, 150], [0, 1]);
+  const passOpacity = useTransform(x, [-150, -50], [1, 0]);
+  const superlikeOpacity = useTransform(y, [-50, -150], [0, 1]);
+  const cardRotate = useTransform(x, [-200, 0, 200], [-25, 0, 25]);
+  const superlikeRotate = useTransform(y, [0, -200], [0, -15]);
 
   const dob = new Date(profile.dob);
   const now = new Date();
@@ -35,12 +37,47 @@ export function SwipeCard({ profile, onSwipe, style }: SwipeCardProps) {
   }
 
   function handleDragEnd(_: unknown, info: PanInfo) {
-    if (info.offset.x > 100) {
+    const dragX = info.offset.x;
+    const dragY = info.offset.y;
+
+    if (dragY < -120 && Math.abs(dragX) < 80) {
+      onSwipe("superlike");
+    } else if (dragX > 100) {
       onSwipe("like");
-    } else if (info.offset.x < -100) {
+    } else if (dragX < -100) {
       onSwipe("pass");
     }
   }
+
+  const getExitAnimation = (): { x?: number; y?: number; rotate?: number; opacity?: number; scale?: number; transition?: { duration: number } } => {
+    const currentX = x.get();
+    const currentY = y.get();
+
+    if (currentY < -100) {
+      return {
+        y: -1200,
+        x: currentX * 0.5,
+        rotate: -30,
+        opacity: 0,
+        scale: 1.2,
+        transition: { duration: 0.5 },
+      };
+    } else if (currentX > 50) {
+      return {
+        x: 500,
+        rotate: 30,
+        opacity: 0,
+        transition: { duration: 0.3 },
+      };
+    } else {
+      return {
+        x: -500,
+        rotate: -30,
+        opacity: 0,
+        transition: { duration: 0.3 },
+      };
+    }
+  };
 
   const photos = profile.photos || [];
   const currentPhoto = photos[photoIndex];
@@ -48,19 +85,14 @@ export function SwipeCard({ profile, onSwipe, style }: SwipeCardProps) {
   return (
     <motion.div
       className="absolute inset-0 cursor-grab active:cursor-grabbing"
-      style={{ x, rotate: cardRotate, ...style }}
+      style={{ x, y, rotate: cardRotate, ...style }}
       drag="x"
-      dragConstraints={{ left: 0, right: 0 }}
+      dragConstraints={{ left: 0, right: 0, top: -300, bottom: 0 }}
       dragElastic={0.7}
       onDragEnd={handleDragEnd}
       whileDrag={{ scale: 1.02 }}
       whileHover={{ scale: 1.01 }}
-      exit={{
-        x: x.get() > 0 ? 500 : -500,
-        opacity: 0,
-        rotate: x.get() > 0 ? 30 : -30,
-        transition: { duration: 0.3 },
-      }}
+      exit={getExitAnimation()}
     >
       <div className="w-full h-full rounded-3xl overflow-hidden bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 relative select-none">
         {/* Depth gradient overlay for stacked cards */}
