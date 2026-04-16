@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 interface ChatInputProps {
   onSend: (content: string, type?: "text" | "image" | "voice", mediaUrl?: string) => void;
@@ -82,7 +83,9 @@ export function ChatInput({ onSend, matchId, disabled }: ChatInputProps) {
       .from("chat-media")
       .upload(path, blob);
 
-    if (!error) {
+    if (error) {
+      toast.error("Failed to upload voice message");
+    } else {
       const { data: urlData } = supabase.storage
         .from("chat-media")
         .getPublicUrl(path);
@@ -119,7 +122,9 @@ export function ChatInput({ onSend, matchId, disabled }: ChatInputProps) {
       .from("chat-media")
       .upload(path, file);
 
-    if (!error) {
+    if (error) {
+      toast.error("Failed to upload image");
+    } else {
       const { data: urlData } = supabase.storage
         .from("chat-media")
         .getPublicUrl(path);

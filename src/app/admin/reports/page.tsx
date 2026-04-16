@@ -43,8 +43,8 @@ export default function AdminReportsPage() {
 
         enriched.push({
           ...r,
-          reporter: reporter as UserProfile,
-          reported: reported as UserProfile,
+          reporter: (reporter as UserProfile) || undefined,
+          reported: (reported as UserProfile) || undefined,
         });
       }
 
@@ -59,10 +59,15 @@ export default function AdminReportsPage() {
     status: "reviewed" | "resolved"
   ) {
     const supabase = createClient();
-    await supabase
+    const { error } = await supabase
       .from("reports")
       .update({ status })
       .eq("id", reportId);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
 
     setReports((prev) =>
       prev.map((r) => (r.id === reportId ? { ...r, status } : r))
@@ -72,10 +77,15 @@ export default function AdminReportsPage() {
 
   async function deactivateUser(userId: string) {
     const supabase = createClient();
-    await supabase
+    const { error } = await supabase
       .from("users")
       .update({ is_active: false })
       .eq("id", userId);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     toast.success("User deactivated");
   }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Plus, X, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -28,6 +28,18 @@ export function PhotoUploader({
 }: PhotoUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [showTips, setShowTips] = useState(false);
+
+  // Create and manage blob URLs to prevent memory leaks
+  const photoUrls = useMemo(
+    () => photos.map((photo) => URL.createObjectURL(photo)),
+    [photos]
+  );
+
+  useEffect(() => {
+    return () => {
+      photoUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [photoUrls]);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || []);
@@ -80,9 +92,9 @@ export function PhotoUploader({
 
       <div className="grid grid-cols-3 gap-3">
         {photos.map((photo, i) => (
-          <div key={i} className="relative aspect-[3/4] rounded-xl overflow-hidden bg-muted">
+          <div key={photo.name + photo.size} className="relative aspect-[3/4] rounded-xl overflow-hidden bg-muted">
             <img
-              src={URL.createObjectURL(photo)}
+              src={photoUrls[i]}
               alt={`Photo ${i + 1}`}
               className="w-full h-full object-cover"
             />

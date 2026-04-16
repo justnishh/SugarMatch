@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Users, Heart, MessageCircle, Flag, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 interface Stats {
   totalUsers: number;
@@ -22,14 +23,7 @@ export default function AdminDashboard() {
     async function load() {
       const supabase = createClient();
 
-      const [
-        { count: totalUsers },
-        { count: seekers },
-        { count: partners },
-        { count: totalMatches },
-        { count: totalMessages },
-        { count: pendingReports },
-      ] = await Promise.all([
+      const results = await Promise.all([
         supabase.from("users").select("*", { count: "exact", head: true }),
         supabase
           .from("users")
@@ -47,13 +41,18 @@ export default function AdminDashboard() {
           .eq("status", "pending"),
       ]);
 
+      const hasError = results.some((r) => r.error);
+      if (hasError) {
+        toast.error("Failed to load some dashboard stats");
+      }
+
       setStats({
-        totalUsers: totalUsers || 0,
-        seekers: seekers || 0,
-        partners: partners || 0,
-        totalMatches: totalMatches || 0,
-        totalMessages: totalMessages || 0,
-        pendingReports: pendingReports || 0,
+        totalUsers: results[0].count || 0,
+        seekers: results[1].count || 0,
+        partners: results[2].count || 0,
+        totalMatches: results[3].count || 0,
+        totalMessages: results[4].count || 0,
+        pendingReports: results[5].count || 0,
         activeToday: 0,
       });
     }

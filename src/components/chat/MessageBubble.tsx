@@ -66,7 +66,7 @@ export function MessageBubble({ message, isOwn }: MessageBubbleProps) {
         {message.message_type === "image" && message.media_url && (
           <img
             src={message.media_url}
-            alt=""
+            alt="Shared image"
             className="rounded-xl mb-1 max-w-full"
           />
         )}

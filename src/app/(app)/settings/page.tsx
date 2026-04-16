@@ -13,6 +13,7 @@ import {
   Trash2,
   ChevronRight,
   Crown,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -20,6 +21,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { createClient } from "@/lib/supabase/client";
+import { useGeolocation } from "@/lib/hooks/useGeolocation";
 import { toast } from "sonner";
 import type { UserProfile } from "@/types/database";
 
@@ -32,6 +34,7 @@ export default function SettingsPage() {
   const [ageRange, setAgeRange] = useState([18, 60]);
   const [distance, setDistance] = useState(50);
   const [isHidden, setIsHidden] = useState(false);
+  const { detecting, detect } = useGeolocation();
 
   useEffect(() => {
     async function load() {
@@ -39,13 +42,21 @@ export default function SettingsPage() {
       const {
         data: { user: authUser },
       } = await supabase.auth.getUser();
-      if (!authUser) return;
+      if (!authUser) {
+        setLoading(false);
+        return;
+      }
 
       const { data: profile } = await supabase
         .from("users")
         .select("*")
         .eq("id", authUser.id)
         .single();
+
+      if (!profile) {
+        setLoading(false);
+        return;
+      }
 
       const u = profile as UserProfile;
       setUser(u);

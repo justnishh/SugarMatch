@@ -106,12 +106,16 @@ export default function ChatPage() {
   }
 
   async function handleBlock() {
-    if (!otherUser) return;
+    if (!otherUser || !currentUserId) return;
     const supabase = createClient();
-    await supabase.from("blocks").insert({
+    const { error: blockError } = await supabase.from("blocks").insert({
       blocker_id: currentUserId,
       blocked_id: otherUser.id,
     });
+    if (blockError) {
+      toast.error("Failed to block user");
+      return;
+    }
     // Deactivate match
     await supabase
       .from("matches")
@@ -122,13 +126,17 @@ export default function ChatPage() {
   }
 
   async function handleReport() {
-    if (!otherUser) return;
+    if (!otherUser || !currentUserId) return;
     const supabase = createClient();
-    await supabase.from("reports").insert({
+    const { error: reportError } = await supabase.from("reports").insert({
       reporter_id: currentUserId,
       reported_id: otherUser.id,
       reason: "Reported from chat",
     });
+    if (reportError) {
+      toast.error("Failed to submit report");
+      return;
+    }
     toast.success("Report submitted");
     setShowMenu(false);
   }

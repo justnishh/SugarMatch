@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo } from "react";
 import { Heart, MapPin, Briefcase } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -28,6 +29,18 @@ export function ProfilePreview({
 }: ProfilePreviewProps) {
   const mainPhoto = photos[0];
 
+  // Create and manage blob URL to prevent memory leaks
+  const mainPhotoUrl = useMemo(
+    () => (mainPhoto ? URL.createObjectURL(mainPhoto) : null),
+    [mainPhoto]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (mainPhotoUrl) URL.revokeObjectURL(mainPhotoUrl);
+    };
+  }, [mainPhotoUrl]);
+
   return (
     <div className="w-full max-w-sm mx-auto">
       <p className="text-sm text-muted-foreground text-center mb-4">
@@ -37,9 +50,9 @@ export function ProfilePreview({
       <div className="rounded-3xl overflow-hidden bg-white shadow-xl border">
         {/* Photo */}
         <div className="relative aspect-[3/4] bg-muted">
-          {mainPhoto && (
+          {mainPhotoUrl && (
             <img
-              src={URL.createObjectURL(mainPhoto)}
+              src={mainPhotoUrl}
               alt="Preview"
               className="w-full h-full object-cover"
             />

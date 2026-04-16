@@ -10,6 +10,7 @@ export function useRealtimeNotifications() {
 
   useEffect(() => {
     const supabase = createClient();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
 
     async function fetchAndSubscribe() {
       const {
@@ -30,7 +31,7 @@ export function useRealtimeNotifications() {
       setUnreadCount(notifs.filter((n) => !n.is_read).length);
 
       // Subscribe to new notifications
-      const channel = supabase
+      channel = supabase
         .channel(`notifications:${user.id}`)
         .on(
           "postgres_changes",
@@ -47,13 +48,15 @@ export function useRealtimeNotifications() {
           }
         )
         .subscribe();
-
-      return () => {
-        supabase.removeChannel(channel);
-      };
     }
 
     fetchAndSubscribe();
+
+    return () => {
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
   }, []);
 
   async function markAllRead() {

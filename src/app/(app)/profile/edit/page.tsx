@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Loader2, Plus, X } from "lucide-react";
+import { ArrowLeft, Loader2, MapPin, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/client";
+import { useGeolocation } from "@/lib/hooks/useGeolocation";
 import { toast } from "sonner";
 import type { UserProfile, Photo, ConditionTag } from "@/types/database";
 
@@ -38,6 +39,9 @@ export default function EditProfilePage() {
   const [conditions, setConditions] = useState<ConditionTag[]>([]);
   const [budgetMin, setBudgetMin] = useState("");
   const [budgetMax, setBudgetMax] = useState("");
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
+  const { detecting, detect } = useGeolocation();
 
   useEffect(() => {
     async function load() {
@@ -45,7 +49,10 @@ export default function EditProfilePage() {
       const {
         data: { user: authUser },
       } = await supabase.auth.getUser();
-      if (!authUser) return;
+      if (!authUser) {
+        setLoading(false);
+        return;
+      }
 
       const { data: profile } = await supabase
         .from("users")
@@ -72,6 +79,8 @@ export default function EditProfilePage() {
       setConditions((u.conditions as ConditionTag[]) || []);
       setBudgetMin(u.budget_min?.toString() || "");
       setBudgetMax(u.budget_max?.toString() || "");
+      setLatitude(u.latitude ?? null);
+      setLongitude(u.longitude ?? null);
       setLoading(false);
     }
     load();
@@ -89,12 +98,14 @@ export default function EditProfilePage() {
         bio,
         city,
         country,
+        latitude,
+        longitude,
         instagram: instagram || null,
         phone: phone || null,
         support_preferences: supportPreferences || null,
         conditions,
-        budget_min: budgetMin ? parseInt(budgetMin) : null,
-        budget_max: budgetMax ? parseInt(budgetMax) : null,
+        budget_min: budgetMin ? Math.max(0, parseInt(budgetMin, 10) || 0) : null,
+        budget_max: budgetMax ? Math.max(0, parseInt(budgetMax, 10) || 0) : null,
       })
       .eq("id", user.id);
 
@@ -143,25 +154,37 @@ export default function EditProfilePage() {
 
     if (insertError) {
       toast.error(insertError.message);
-    } else {
+    } else if (newPhoto) {
       setPhotos([...photos, newPhoto as Photo]);
       toast.success("Photo added!");
     }
   }
 
   async function handleDeletePhoto(photo: Photo) {
+    if (!user) return;
     if (photos.length <= 2) {
       toast.error("You need at least 2 photos");
       return;
     }
 
     const supabase = createClient();
-    await supabase.from("photos").delete().eq("id", photo.id);
 
-    // Delete from storage
+    // Delete from storage first (so we don't lose the reference if DB delete succeeds but storage fails)
     const storagePath = photo.url.split("/photos/")[1];
     if (storagePath) {
       await supabase.storage.from("photos").remove([storagePath]);
+    }
+
+    // Delete from DB with ownership check
+    const { error } = await supabase
+      .from("photos")
+      .delete()
+      .eq("id", photo.id)
+      .eq("user_id", user.id);
+
+    if (error) {
+      toast.error("Failed to delete photo");
+      return;
     }
 
     setPhotos(photos.filter((p) => p.id !== photo.id));
@@ -246,6 +269,32 @@ export default function EditProfilePage() {
             {bio.length}/300
           </p>
         </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full h-12 border-rose-200 text-rose-600"
+          disabled={detecting}
+          onClick={async () => {
+            const result = await detect();
+            if (result) {
+              setCity(result.city);
+              setCountry(result.country);
+              setLatitude(result.latitude);
+              setLongitude(result.longitude);
+              toast.success("Location updated!");
+            } else {
+              toast.error("Could not detect location.");
+            }
+          }}
+        >
+          {detecting ? (
+            <Loader2 className="w-4 h-4 animate-spin mr-2" />
+          ) : (
+            <MapPin className="w-4 h-4 mr-2" />
+          )}
+          {detecting ? "Detecting..." : "Detect my location"}
+        </Button>
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">

@@ -34,7 +34,7 @@ export async function updateSession(request: NextRequest) {
   // Public routes that don't require auth
   const publicRoutes = ['/', '/login', '/register'];
   const isPublicRoute = publicRoutes.some(
-    (route) => pathname === route || pathname.startsWith(route + '/')
+    (route) => pathname === route || (route !== '/' && pathname.startsWith(route + '/'))
   );
 
   // If not logged in and trying to access protected route, redirect to login
@@ -49,6 +49,21 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = '/home';
     return NextResponse.redirect(url);
+  }
+
+  // Admin route protection — only allow users with is_admin flag
+  if (user && pathname.startsWith('/admin')) {
+    const { data: profile } = await supabase
+      .from('users')
+      .select('is_admin')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile?.is_admin) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/home';
+      return NextResponse.redirect(url);
+    }
   }
 
   return supabaseResponse;

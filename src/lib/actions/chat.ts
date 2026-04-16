@@ -39,6 +39,8 @@ export async function getMatches(): Promise<MatchWithUser[]> {
       .eq("id", otherId)
       .single();
 
+    if (!otherUser) continue;
+
     const { data: photos } = await supabase
       .from("photos")
       .select("*")
@@ -84,6 +86,24 @@ export async function sendMessage(
   } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
 
+  // Validate content length
+  if (messageType === "text" && (!content || content.length > 5000)) {
+    return { error: "Message must be between 1 and 5000 characters" };
+  }
+
+  // Verify user is part of this match
+  const { data: match, error: matchError } = await supabase
+    .from("matches")
+    .select("user1_id, user2_id, is_active")
+    .eq("id", matchId)
+    .single();
+
+  if (matchError || !match) return { error: "Match not found" };
+  if (match.user1_id !== user.id && match.user2_id !== user.id) {
+    return { error: "Unauthorized" };
+  }
+  if (!match.is_active) return { error: "Match is no longer active" };
+
   const { error } = await supabase.from("messages").insert({
     match_id: matchId,
     sender_id: user.id,
@@ -95,23 +115,15 @@ export async function sendMessage(
   if (error) return { error: error.message };
 
   // Create notification for the other user
-  const { data: match } = await supabase
-    .from("matches")
-    .select("user1_id, user2_id")
-    .eq("id", matchId)
-    .single();
-
-  if (match) {
-    const otherId =
-      match.user1_id === user.id ? match.user2_id : match.user1_id;
-    await supabase.from("notifications").insert({
-      user_id: otherId,
-      type: "message",
-      title: "New Message",
-      body: messageType === "text" ? content.slice(0, 100) : `Sent a ${messageType}`,
-      related_user_id: user.id,
-    });
-  }
+  const otherId =
+    match.user1_id === user.id ? match.user2_id : match.user1_id;
+  await supabase.from("notifications").insert({
+    user_id: otherId,
+    type: "message",
+    title: "New Message",
+    body: messageType === "text" ? content.slice(0, 100) : `Sent a ${messageType}`,
+    related_user_id: user.id,
+  });
 
   return {};
 }
@@ -122,6 +134,17 @@ export async function markMessagesAsRead(matchId: string): Promise<void> {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return;
+
+  // Verify user is part of this match
+  const { data: match } = await supabase
+    .from("matches")
+    .select("user1_id, user2_id")
+    .eq("id", matchId)
+    .single();
+
+  if (!match || (match.user1_id !== user.id && match.user2_id !== user.id)) {
+    return;
+  }
 
   await supabase
     .from("messages")

@@ -49,6 +49,9 @@ export default function PartnerRegistrationPage() {
   const [facebookUrl, setFacebookUrl] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
+  const { detecting, detect } = useGeolocation();
 
   // Step 3: Bio
   const [bio, setBio] = useState("");
@@ -131,9 +134,11 @@ export default function PartnerRegistrationPage() {
         bio,
         city,
         country,
+        latitude,
+        longitude,
         conditions,
-        budget_min: budgetMin ? parseInt(budgetMin) : null,
-        budget_max: budgetMax ? parseInt(budgetMax) : null,
+        budget_min: budgetMin ? Math.max(0, parseInt(budgetMin, 10) || 0) : null,
+        budget_max: budgetMax ? Math.max(0, parseInt(budgetMax, 10) || 0) : null,
       });
       if (profileError) throw profileError;
 
@@ -316,6 +321,32 @@ export default function PartnerRegistrationPage() {
                   className="h-12"
                 />
               </div>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full h-12 border-rose-200 text-rose-600"
+                disabled={detecting}
+                onClick={async () => {
+                  const result = await detect();
+                  if (result) {
+                    setCity(result.city);
+                    setCountry(result.country);
+                    setLatitude(result.latitude);
+                    setLongitude(result.longitude);
+                    toast.success("Location detected!");
+                  } else {
+                    toast.error("Could not detect location. Enter manually.");
+                  }
+                }}
+              >
+                {detecting ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                ) : (
+                  <MapPin className="w-4 h-4 mr-2" />
+                )}
+                {detecting ? "Detecting..." : "Detect my location"}
+              </Button>
+
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label htmlFor="city">City</Label>

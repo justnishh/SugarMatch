@@ -50,10 +50,14 @@ export default function AdminUsersPage() {
 
   async function toggleActive(userId: string, isActive: boolean) {
     const supabase = createClient();
-    await supabase
+    const { error } = await supabase
       .from("users")
       .update({ is_active: !isActive })
       .eq("id", userId);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     setUsers((prev) =>
       prev.map((u) =>
         u.id === userId ? { ...u, is_active: !isActive } : u
@@ -64,10 +68,14 @@ export default function AdminUsersPage() {
 
   async function toggleVerified(userId: string, isVerified: boolean) {
     const supabase = createClient();
-    await supabase
+    const { error } = await supabase
       .from("users")
       .update({ is_verified: !isVerified })
       .eq("id", userId);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     setUsers((prev) =>
       prev.map((u) =>
         u.id === userId ? { ...u, is_verified: !isVerified } : u
@@ -78,9 +86,9 @@ export default function AdminUsersPage() {
 
   const filtered = users.filter(
     (u) =>
-      u.full_name.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase()) ||
-      u.city.toLowerCase().includes(search.toLowerCase())
+      (u.full_name || "").toLowerCase().includes(search.toLowerCase()) ||
+      (u.email || "").toLowerCase().includes(search.toLowerCase()) ||
+      (u.city || "").toLowerCase().includes(search.toLowerCase())
   );
 
   if (loading) {
@@ -142,7 +150,7 @@ export default function AdminUsersPage() {
                           <AvatarImage src={user.photo.url} />
                         ) : null}
                         <AvatarFallback className="bg-rose-100 text-rose-600 text-sm">
-                          {user.full_name.charAt(0)}
+                          {(user.full_name || "?").charAt(0)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
@@ -173,7 +181,7 @@ export default function AdminUsersPage() {
                     </Badge>
                   </td>
                   <td className="px-4 py-3 text-sm text-muted-foreground">
-                    {user.city}, {user.country}
+                    {user.city || "N/A"}, {user.country || "N/A"}
                   </td>
                   <td className="px-4 py-3">
                     <Badge
