@@ -248,9 +248,10 @@ export default function HomePage() {
         open={showMatch}
         matchName={matchedProfile?.full_name || ""}
         matchPhoto={matchedProfile?.photos?.[0]?.url}
-        onChat={() => {
+        userRole={matchedProfile?.role || "seeker"}
+        onChat={(icebreaker) => {
           setShowMatch(false);
-          if (matchId) router.push(`/chat/${matchId}`);
+          if (matchId) router.push(`/chat/${matchId}${icebreaker ? `?msg=${encodeURIComponent(icebreaker)}` : ""}`);
         }}
         onContinue={() => setShowMatch(false)}
       />

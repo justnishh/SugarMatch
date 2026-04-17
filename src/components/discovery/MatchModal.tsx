@@ -1,14 +1,17 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, MessageCircle, Sparkles } from "lucide-react";
+import { Heart, MessageCircle, Sparkles, Shuffle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/client";
 
 interface MatchModalProps {
   open: boolean;
   matchName: string;
   matchPhoto?: string;
-  onChat: () => void;
+  userRole: "seeker" | "partner";
+  onChat: (icebreaker?: string) => void;
   onContinue: () => void;
 }
 
@@ -16,9 +19,38 @@ export function MatchModal({
   open,
   matchName,
   matchPhoto,
+  userRole,
   onChat,
   onContinue,
 }: MatchModalProps) {
+  const [icebreakers, setIcebreakers] = useState<string[]>([]);
+  const [selectedIcebreaker, setSelectedIcebreaker] = useState<string | null>(null);
+  const [showIcebreakers, setShowIcebreakers] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      loadIcebreakers();
+    }
+  }, [open, userRole]);
+
+  async function loadIcebreakers() {
+    const supabase = createClient();
+    const { data } = await supabase
+      .from("icebreakers")
+      .select("text")
+      .eq("role", userRole)
+      .limit(5);
+
+    if (data && data.length > 0) {
+      setIcebreakers(data.map((d) => d.text));
+    } else {
+      setIcebreakers([
+        "What's your idea of a perfect first date?",
+        "Tell me about your last trip",
+      ]);
+    }
+  }
+
   const confettiParticles = [...Array(20)].map((_, i) => ({
     id: i,
     x: Math.random() * 100,
@@ -35,6 +67,85 @@ export function MatchModal({
     duration: 3 + Math.random() * 2,
     delay: Math.random() * 2,
   }));
+
+  if (showIcebreakers) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4"
+        onClick={() => setShowIcebreakers(false)}
+      >
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="w-full max-w-sm bg-white rounded-3xl p-6 shadow-2xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-rose-500" />
+              <h2 className="text-lg font-bold">Break the Ice!</h2>
+            </div>
+            <button
+              onClick={() => setShowIcebreakers(false)}
+              className="p-1 rounded-full hover:bg-muted transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+
+          <p className="text-sm text-muted-foreground mb-4">
+            Pick a conversation starter
+          </p>
+
+          <div className="space-y-2 mb-6">
+            {icebreakers.map((text, i) => (
+              <button
+                key={i}
+                onClick={() => setSelectedIcebreaker(text)}
+                className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
+                  selectedIcebreaker === text
+                    ? "border-rose-500 bg-rose-50"
+                    : "border-muted hover:border-rose-200"
+                }`}
+              >
+                <span className="text-sm font-medium">{text}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              className="flex-1 border-rose-200"
+              onClick={() => {
+                const random =
+                  icebreakers[Math.floor(Math.random() * icebreakers.length)];
+                setSelectedIcebreaker(random);
+              }}
+            >
+              <Shuffle className="w-4 h-4 mr-2" />
+              Random
+            </Button>
+            <Button
+              className="flex-1 bg-rose-500 hover:bg-rose-600"
+              disabled={!selectedIcebreaker}
+              onClick={() => {
+                onChat(selectedIcebreaker || undefined);
+                setShowIcebreakers(false);
+              }}
+            >
+              <MessageCircle className="w-4 h-4 mr-2" />
+              Send
+            </Button>
+          </div>
+        </motion.div>
+      </motion.div>
+    );
+  }
+
   return (
     <AnimatePresence>
       {open && (
@@ -158,16 +269,24 @@ export function MatchModal({
             className="w-full max-w-xs space-y-3"
           >
             <Button
-              onClick={onChat}
+              onClick={() => setShowIcebreakers(true)}
               className="w-full h-14 text-lg bg-white text-rose-600 hover:bg-white/90 shadow-lg"
             >
+              <Sparkles className="w-5 h-5 mr-2" />
+              Send an Icebreaker
+            </Button>
+            <Button
+              onClick={() => onChat()}
+              variant="ghost"
+              className="w-full h-14 text-lg text-white hover:bg-white/10 border border-white/30"
+            >
               <MessageCircle className="w-5 h-5 mr-2" />
-              Send a Message
+              Just Say Hi
             </Button>
             <Button
               onClick={onContinue}
               variant="ghost"
-              className="w-full h-14 text-lg text-white hover:bg-white/10 border border-white/30"
+              className="w-full text-white/70 hover:text-white hover:bg-white/10"
             >
               Keep Swiping
             </Button>

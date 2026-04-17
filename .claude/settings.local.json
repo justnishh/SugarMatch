@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E \"\\\\.tsx$\")",
+      "Bash(xargs basename:*)",
+      "Bash(xargs grep:*)",
+      "Bash(xargs wc:*)",
+      "Bash(find /c/Users/sande/OneDrive/Desktop/SugerFinds/src -type f \\\\\\( -name \"*.ts\" -o -name \"*.tsx\" \\\\\\) -exec grep -l \"POST\\\\|PUT\\\\|DELETE\\\\|GET\\\\|route\\\\|handler\\\\|fetch\" {} \\\\;)",
+      "Bash(npx tsc:*)"
+    ]
+  }
+}
