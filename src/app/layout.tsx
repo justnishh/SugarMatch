@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Playfair_Display, Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
-import { MobileView } from "@/components/ui/MobileView";
+import { AdBanner } from "@/components/ui/AdBanner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -54,6 +54,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-gradient-to-b from-rose-100 via-pink-50 to-rose-100">
+        <AdBanner />
         <div className="mx-auto max-w-[393px] w-full min-h-[100dvh]">
           {children}
         </div>
