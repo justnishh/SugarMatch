@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Playfair_Display, Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import { MobileView } from "@/components/ui/MobileView";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -52,8 +53,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        {children}
+      <body className="min-h-full flex flex-col bg-gradient-to-b from-rose-100 via-pink-50 to-rose-100">
+        <MobileView>
+          {children}
+        </MobileView>
         <Toaster position="top-center" richColors />
       </body>
     </html>
