@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Playfair_Display, Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
-import { AdBanner, StickyAdBanner, StickyBottomAd } from "@/components/ui/AdBanner";
+import { AdBanner, NativeBanner, SocialBar, SmartlinkAd } from "@/components/ui/AdBanner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -55,11 +55,12 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-gradient-to-b from-rose-100 via-pink-50 to-rose-100">
         <AdBanner />
-        <StickyAdBanner />
-        <div className="mx-auto max-w-[393px] w-full min-h-[100dvh] pt-[50px] pb-[60px]">
+        <SocialBar />
+        <div className="mx-auto max-w-[393px] w-full min-h-[100dvh]">
+          <NativeBanner />
           {children}
+          <SmartlinkAd />
         </div>
-        <StickyBottomAd />
         <Toaster position="top-center" richColors />
       </body>
     </html>

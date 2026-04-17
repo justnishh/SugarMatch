@@ -3,6 +3,9 @@
 import { useEffect } from "react";
 
 const POPUNDER_SCRIPT = "https://pl29173087.profitablecpmratenetwork.com/b8/9b/94/b89b9445a8cc7a16eb524bdc794eb2ba.js";
+const NATIVE_BANNER_SCRIPT = "https://pl29173142.profitablecpmratenetwork.com/34ca30df22131347cf739266a7fd9090/invoke.js";
+const SOCIAL_BAR_SCRIPT = "https://pl29173143.profitablecpmratenetwork.com/ee/b6/72/eeb67249413c9862b97f53a52fd19197.js";
+const SMARTLINK_URL = "https://www.profitablecpmratenetwork.com/uw5hemh4?key=d3c08732597f88acaa786e467d391472";
 
 export function AdBanner() {
   useEffect(() => {
@@ -12,7 +15,7 @@ export function AdBanner() {
     document.head.appendChild(script);
 
     return () => {
-      const existing = document.head.querySelector(`script[src*="profitablecpmratenetwork"]`);
+      const existing = document.head.querySelector(`script[src*="profitablecpmratenetwork.com/b8"]`);
       if (existing) document.head.removeChild(existing);
     };
   }, []);
@@ -20,26 +23,52 @@ export function AdBanner() {
   return null;
 }
 
-export function StickyAdBanner() {
+export function NativeBanner() {
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = NATIVE_BANNER_SCRIPT;
+    script.async = true;
+    script.setAttribute("data-cfasync", "false");
+    document.body.appendChild(script);
+
+    return () => {
+      const existing = document.body.querySelector(`script[src*="profitablecpmratenetwork.com/34ca30"]`);
+      if (existing) document.body.removeChild(existing);
+    };
+  }, []);
+
   return (
-    <div className="fixed top-0 left-0 right-0 z-[9999] flex justify-center items-center bg-gradient-to-r from-rose-200 via-pink-200 to-rose-200 h-[50px] shadow-md">
-      <div className="max-w-[393px] w-full flex items-center justify-center px-2">
-        <div className="text-xs text-rose-800 text-center">
-          Advertisement Banner
-        </div>
-      </div>
+    <div className="w-full flex justify-center py-3">
+      <div id="container-34ca30df22131347cf739266a7fd9090" />
     </div>
   );
 }
 
-export function StickyBottomAd() {
+export function SocialBar() {
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = SOCIAL_BAR_SCRIPT;
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      const existing = document.body.querySelector(`script[src*="profitablecpmratenetwork.com/ee"]`);
+      if (existing) document.body.removeChild(existing);
+    };
+  }, []);
+
+  return null;
+}
+
+export function SmartlinkAd() {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[9999] flex justify-center items-center bg-gradient-to-r from-rose-200 via-pink-200 to-rose-200 h-[60px] shadow-lg">
-      <div className="max-w-[393px] w-full flex items-center justify-center px-2">
-        <div className="text-xs text-rose-800 text-center">
-          Advertisement Banner
-        </div>
-      </div>
-    </div>
+    <a
+      href={SMARTLINK_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block w-full text-center py-2 px-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white text-sm font-medium rounded-lg hover:from-rose-600 hover:to-pink-600 transition-all"
+    >
+      Click Here for Exclusive Offers
+    </a>
   );
 }
