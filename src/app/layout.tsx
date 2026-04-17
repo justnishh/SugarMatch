@@ -28,6 +28,7 @@ export const metadata: Metadata = {
   title: "SugarMatch — Find Your Perfect Match",
   description: "Connect with compatible partners. A premium dating experience.",
   manifest: "/manifest.json",
+  icons: [{ url: "/icon.svg" }],
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
