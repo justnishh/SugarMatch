@@ -12,6 +12,7 @@ import { MatchModal } from "@/components/discovery/MatchModal";
 import { getDiscoveryFeed } from "@/lib/actions/discovery";
 import { recordSwipe } from "@/lib/actions/swipe";
 import { usePremium } from "@/lib/hooks/usePremium";
+import { useSuperLike } from "@/lib/premium";
 import { toast } from "sonner";
 import type { DiscoveryProfile } from "@/types/database";
 
@@ -321,15 +322,23 @@ export default function HomePage() {
             <X className="w-7 h-7 text-red-500" />
           </Button>
 
-          <Button
-            variant="outline"
-            size="icon"
-            className="w-14 h-14 rounded-full border-2 border-blue-200 hover:bg-blue-50 hover:border-blue-400"
-            onClick={handleSuperLike}
-            disabled={swiping}
-          >
-            <Star className="w-6 h-6 text-blue-500" />
-          </Button>
+          {/* Super Like button with remaining count */}
+          <div className="relative">
+            <Button
+              variant="outline"
+              size="icon"
+              className="w-14 h-14 rounded-full border-2 border-blue-200 hover:bg-blue-50 hover:border-blue-400"
+              onClick={handleSuperLike}
+              disabled={swiping || (premiumStatus?.superLikesRemaining ?? 1) <= 0}
+            >
+              <Star className="w-6 h-6 text-blue-500" />
+            </Button>
+            {premiumStatus && (
+              <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {premiumStatus.superLikesRemaining}
+              </span>
+            )}
+          </div>
 
           <Button
             variant="outline"
