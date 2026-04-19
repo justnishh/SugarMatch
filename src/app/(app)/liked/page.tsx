@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/client";
 import { recordSwipe } from "@/lib/actions/swipe";
+import { usePremium } from "@/lib/hooks/usePremium";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import type { UserProfile, Photo } from "@/types/database";
 
 interface LikedUser {
@@ -16,9 +18,10 @@ interface LikedUser {
 }
 
 export default function LikedYouPage() {
+  const router = useRouter();
+  const { status: premiumStatus, isPremium } = usePremium();
   const [likedUsers, setLikedUsers] = useState<LikedUser[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isPremium, setIsPremium] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -27,14 +30,6 @@ export default function LikedYouPage() {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) return;
-
-      const { data: profile } = await supabase
-        .from("users")
-        .select("is_premium")
-        .eq("id", user.id)
-        .single();
-
-      setIsPremium(profile?.is_premium || false);
 
       // Get people who swiped right on the current user
       const { data: swipes } = await supabase
@@ -171,21 +166,24 @@ export default function LikedYouPage() {
                     </Button>
                   </>
                 ) : (
-                  <div className="text-center">
-                    <p className="text-white text-sm font-medium">
-                      Upgrade to see
-                    </p>
-                  </div>
+                  <Button
+                    size="sm"
+                    className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600"
+                    onClick={() => router.push("/premium")}
+                  >
+                    <Crown className="w-4 h-4 mr-1" />
+                    Upgrade to See
+                  </Button>
                 )}
               </div>
 
               {/* Premium lock overlay */}
               {!isPremium && (
-                <div className="absolute inset-0 flex items-center justify-center">
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                   <div className="text-center">
                     <Crown className="w-10 h-10 text-amber-400 mx-auto mb-2" />
                     <p className="text-white font-semibold text-sm drop-shadow-lg">
-                      Premium
+                      Premium Only
                     </p>
                   </div>
                 </div>
