@@ -13,12 +13,7 @@ This document tracks all development work on the SugarMatch (SugerFinds) dating 
 
 ## In Progress
 
-### Chat & Match UX Enhancements (April 16, 2026)
-- **Icebreakers**: Pre-defined conversation starters after match
-- **Activity Status**: Online/Away/Offline indicators
-- **Profile Preview**: Quick view in chat without leaving
-- **Voice Messages**: Record and send voice notes
-- Spec: `docs/superpowers/specs/2026-04-16-chat-enhancements-spec.md`
+Nothing currently in progress.
 
 ---
 
@@ -49,31 +44,38 @@ This document tracks all development work on the SugarMatch (SugerFinds) dating 
 - App pages: Constrained container
 - BottomNav: Sticky within container
 
-### Phase 4: Bug Fixes (April 16, 2026)
-- **Layout Shift**: Removed PageTransition animation, added always-visible scrollbar
-- **Slider UI**: Larger thumb (size-5), visible track/thumb colors, z-index
-- **Settings Links**: Added click handlers (Notifications navigates, others show alerts)
-- **BottomNav Indicator**: Fixed animation (replaced layoutId with CSS transitions)
+### Phase 4: Bootstrap & Typography (April 17, 2026)
+- **Bootstrap**: Mobile-width scaling (393px)
+- **Favicon**: Custom pink heart icon
+- **Ad Banners**: Placeholder scripts (commented for dev)
+- **Fonts**: Playfair Display + Inter typography system
+
+### Phase 5: Premium Feature Gating (April 19, 2026)
+- **Premium Tiers**: Weekly (₹499), Monthly (₹1,499), Lifetime (₹2,999)
+- **Test Payment**: Mock payment flow (Stripe later)
+- **Feature Gating**: Swipe limits (20/day), Who Liked You, Super Likes
+- **Premium Hook**: usePremium hook for tier status
+- Files: `src/lib/premium.ts`, `src/lib/hooks/usePremium.ts`, premium/page.tsx, home/page.tsx, liked/page.tsx
 
 ---
 
 ## Files Modified
-1. `src/app/globals.css` - Scrollbar styling
-2. `src/app/(app)/layout.tsx` - Constrained layout
-3. `src/app/(auth)/layout.tsx` - Centered auth
-4. `src/components/nav/BottomNav.tsx` - Fixed indicator animation
-5. `src/components/ui/slider.tsx` - Fixed thumb/track visibility
-6. `src/components/ui/PageTransition.tsx` - Removed animation
-7. `src/app/(app)/settings/page.tsx` - Added menu click handlers
-8. `src/lib/hooks/useGeolocation.ts` - Renamed `detecting` to `loading`
+1. `src/app/globals.css` - Typography scale
+2. `src/app/(app)/layout.tsx` - Mobile-width container
+3. `src/app/(app)/home/page.tsx` - Swipe limits
+4. `src/app/(app)/premium/page.tsx` - Test payment
+5. `src/app/(app)/liked/page.tsx` - Premium gating
+6. `src/lib/premium.ts` - Premium utilities
+7. `src/lib/hooks/usePremium.ts` - Premium hook
+8. `public/icon.svg` - Favicon
 
 ---
 
 ## Next Steps
-1. Payment integration for premium features
-2. OAuth authentication
-3. Push notifications
-4. Analytics dashboard
+1. OAuth authentication
+2. Push notifications
+3. Analytics dashboard
+4. Run migration in Supabase: `supabase/migrations/2026-04-19-add-premium-tier-columns.sql`
 
 ---
-*Last Updated: April 16, 2026*
+*Last Updated: April 19, 2026*
