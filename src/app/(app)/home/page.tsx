@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
-import { Heart, X, Star, SlidersHorizontal, Loader2, Sparkles, RefreshCw } from "lucide-react";
+import { Heart, X, Star, SlidersHorizontal, Loader2, Sparkles, RefreshCw, Crown } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,15 +11,46 @@ import { SwipeCard } from "@/components/discovery/SwipeCard";
 import { MatchModal } from "@/components/discovery/MatchModal";
 import { getDiscoveryFeed } from "@/lib/actions/discovery";
 import { recordSwipe } from "@/lib/actions/swipe";
+import { usePremium } from "@/lib/hooks/usePremium";
 import { toast } from "sonner";
 import type { DiscoveryProfile } from "@/types/database";
 
+const MAX_FREE_SWIPES = 20;
+
 export default function HomePage() {
   const router = useRouter();
+  const { status: premiumStatus, isPremium } = usePremium();
   const [profiles, setProfiles] = useState<DiscoveryProfile[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [swiping, setSwiping] = useState(false);
+  const [swipeCount, setSwipeCount] = useState(0);
+  const [showLimitModal, setShowLimitModal] = useState(false);
+
+  // Load swipe count from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("swipeCount");
+    const today = new Date().toDateString();
+    if (saved) {
+      const { count, date } = JSON.parse(saved);
+      if (date === today) {
+        setSwipeCount(count);
+      }
+    }
+  }, []);
+
+  // Save swipe count to localStorage
+  const saveSwipeCount = useCallback((count: number) => {
+    const today = new Date().toDateString();
+    localStorage.setItem("swipeCount", JSON.stringify({ count, date: today }));
+    setSwipeCount(count);
+  }, []);
+
+  // Check if user can swipe
+  const canSwipe = useCallback(() => {
+    if (isPremium) return true;
+    return swipeCount < MAX_FREE_SWIPES;
+  }, [isPremium, swipeCount]);
 
   // Match modal
   const [showMatch, setShowMatch] = useState(false);
@@ -42,6 +73,10 @@ export default function HomePage() {
 
   async function handleSwipe(direction: "like" | "pass") {
     if (swiping || currentIndex >= profiles.length) return;
+    if (!canSwipe()) {
+      setShowLimitModal(true);
+      return;
+    }
     setSwiping(true);
 
     const profile = profiles[currentIndex];
@@ -62,6 +97,7 @@ export default function HomePage() {
       setShowMatch(true);
     }
 
+    saveSwipeCount(swipeCount + 1);
     setCurrentIndex((prev) => prev + 1);
     setSwiping(false);
 
@@ -73,6 +109,10 @@ export default function HomePage() {
 
   async function handleSuperLike() {
     if (swiping || currentIndex >= profiles.length) return;
+    if (!canSwipe()) {
+      setShowLimitModal(true);
+      return;
+    }
     setSwiping(true);
 
     const profile = profiles[currentIndex];
@@ -92,6 +132,7 @@ export default function HomePage() {
       toast.success("Super Like sent!");
     }
 
+    saveSwipeCount(swipeCount + 1);
     setCurrentIndex((prev) => prev + 1);
     setSwiping(false);
   }
@@ -103,9 +144,14 @@ export default function HomePage() {
     <div className="h-screen flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3">
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-rose-500 to-pink-600 bg-clip-text text-transparent">
-          SugarMatch
-        </h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-rose-500 to-pink-600 bg-clip-text text-transparent">
+            SugarMatch
+          </h1>
+          {isPremium && (
+            <Crown className="w-5 h-5 text-amber-500" />
+          )}
+        </div>
         <Button
           variant="ghost"
           size="icon"
@@ -115,6 +161,29 @@ export default function HomePage() {
           <SlidersHorizontal className="w-5 h-5" />
         </Button>
       </div>
+
+      {/* Swipe counter for free users */}
+      {!isPremium && (
+        <div className="px-4 pb-2">
+          <div className="flex items-center justify-between text-sm text-muted-foreground">
+            <span>Swipes remaining: {MAX_FREE_SWIPES - swipeCount}</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+              onClick={() => router.push("/premium")}
+            >
+              Upgrade for unlimited
+            </Button>
+          </div>
+          <div className="w-full bg-muted rounded-full h-1 mt-1">
+            <div
+              className="bg-rose-500 h-1 rounded-full transition-all"
+              style={{ width: `${Math.max(0, ((MAX_FREE_SWIPES - swipeCount) / MAX_FREE_SWIPES) * 100)}%` }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Card stack */}
       <div className="flex-1 px-4 pb-4 relative">
@@ -147,14 +216,14 @@ export default function HomePage() {
                 <Sparkles className="w-8 h-8 text-amber-400" />
               </motion.div>
             </div>
-            <motion.h3 
+            <motion.h3
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               className="text-xl font-semibold mb-2"
             >
               No more profiles
             </motion.h3>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
@@ -167,8 +236,8 @@ export default function HomePage() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
             >
-              <Button 
-                onClick={loadFeed} 
+              <Button
+                onClick={loadFeed}
                 variant="outline"
                 className="border-rose-200 text-rose-600 hover:bg-rose-50"
               >
@@ -207,6 +276,37 @@ export default function HomePage() {
           </div>
         )}
       </div>
+
+      {/* Limit reached modal */}
+      {showLimitModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-sm w-full text-center">
+            <Crown className="w-16 h-16 text-amber-500 mx-auto mb-4" />
+            <h3 className="text-xl font-bold mb-2">Daily Limit Reached</h3>
+            <p className="text-muted-foreground mb-6">
+              You've used all {MAX_FREE_SWIPES} swipes today. Upgrade to Premium for unlimited swipes!
+            </p>
+            <div className="space-y-3">
+              <Button
+                className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600"
+                onClick={() => {
+                  setShowLimitModal(false);
+                  router.push("/premium");
+                }}
+              >
+                Upgrade Now
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full"
+                onClick={() => setShowLimitModal(false)}
+              >
+                Maybe Later
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Action buttons */}
       {currentProfile && (
