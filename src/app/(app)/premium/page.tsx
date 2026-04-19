@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowLeft, Crown, Heart, Eye, Star, Shield, Zap, Check } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowLeft, Crown, Heart, Eye, Star, Shield, Zap, Check, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { usePremium } from "@/lib/hooks/usePremium";
 import { activatePremium } from "@/lib/premium";
 import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
 
 const plans = [
   {
@@ -45,12 +46,26 @@ const tierColors = {
 
 export default function PremiumPage() {
   const router = useRouter();
-  const { status, userId, loading, tier } = usePremium();
+  const { status, userId: hookUserId, loading: hookLoading, tier } = usePremium();
   const [processing, setProcessing] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // Get fresh userId on mount
+  useEffect(() => {
+    async function getUser() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      setUserId(user?.id ?? null);
+    }
+    getUser();
+  }, []);
 
   async function handleTestPay(tierName: "weekly" | "monthly" | "lifetime") {
-    if (!userId) {
+    // Use fresh userId from state or fallback to hook
+    const currentUserId = userId || hookUserId;
+    
+    if (!currentUserId) {
       toast.error("Please sign in first");
       return;
     }
@@ -59,10 +74,18 @@ export default function PremiumPage() {
     setSelectedPlan(tierName);
 
     try {
-      await activatePremium(userId, tierName);
+      await activatePremium(currentUserId, tierName);
       toast.success(`Successfully activated ${tierName} plan!`);
-      window.location.reload();
+      
+      // Update local state immediately
+      setUserId(currentUserId);
+      
+      // Small delay then reload
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
+      console.error("Premium activation error:", error);
       toast.error("Failed to activate premium. Please try again.");
     } finally {
       setProcessing(false);
@@ -82,6 +105,14 @@ export default function PremiumPage() {
         </button>
         <h1 className="text-2xl font-bold">Premium</h1>
       </div>
+
+      {/* Loading state */}
+      {(hookLoading || !userId) && (
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="w-6 h-6 animate-spin text-amber-500" />
+          <span className="ml-2 text-muted-foreground">Loading...</span>
+        </div>
+      )}
 
       {/* Current Status */}
       {status?.isActive && (
