@@ -57,6 +57,13 @@ Nothing currently in progress.
 - **Premium Hook**: usePremium hook for tier status
 - Files: `src/lib/premium.ts`, `src/lib/hooks/usePremium.ts`, premium/page.tsx, home/page.tsx, liked/page.tsx
 
+### Phase 6: OAuth Authentication (May 9, 2026)
+- **Google OAuth**: Sign in with Google accounts
+- **Facebook OAuth**: Sign in with Facebook accounts
+- **Callback Handler**: Secure OAuth callback route
+- **UI Integration**: Buttons on login and register pages
+- Files: `src/app/api/auth/callback/route.ts`, `src/app/(auth)/login/page.tsx`, `src/app/(auth)/register/page.tsx`
+
 ---
 
 ## Files Modified
@@ -68,14 +75,16 @@ Nothing currently in progress.
 6. `src/lib/premium.ts` - Premium utilities
 7. `src/lib/hooks/usePremium.ts` - Premium hook
 8. `public/icon.svg` - Favicon
+9. `src/app/api/auth/callback/route.ts` - OAuth callback handler
+10. `src/app/(auth)/login/page.tsx` - OAuth buttons on login
+11. `src/app/(auth)/register/page.tsx` - OAuth buttons on register
 
 ---
 
 ## Next Steps
-1. OAuth authentication
-2. Push notifications
-3. Analytics dashboard
-4. Run migration in Supabase: `supabase/migrations/2026-04-19-add-premium-tier-columns.sql`
+1. Push notifications
+2. Analytics dashboard
+3. Run migration in Supabase: `supabase/migrations/2026-04-19-add-premium-tier-columns.sql` (if not already done)
 
 ---
-*Last Updated: April 19, 2026*
+*Last Updated: May 9, 2026*
