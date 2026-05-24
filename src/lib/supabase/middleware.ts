@@ -26,8 +26,8 @@ export async function updateSession(request: NextRequest) {
   );
 
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
 
   const { pathname } = request.nextUrl;
 
@@ -38,32 +38,17 @@ export async function updateSession(request: NextRequest) {
   );
 
   // If not logged in and trying to access protected route, redirect to login
-  if (!user && !isPublicRoute) {
+  if (!session && !isPublicRoute) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     return NextResponse.redirect(url);
   }
 
   // If logged in and on auth pages, redirect to home
-  if (user && isPublicRoute && pathname !== '/') {
+  if (session && isPublicRoute && pathname !== '/') {
     const url = request.nextUrl.clone();
     url.pathname = '/home';
     return NextResponse.redirect(url);
-  }
-
-  // Admin route protection — only allow users with is_admin flag
-  if (user && pathname.startsWith('/admin')) {
-    const { data: profile } = await supabase
-      .from('users')
-      .select('is_admin')
-      .eq('id', user.id)
-      .single();
-
-    if (!profile?.is_admin) {
-      const url = request.nextUrl.clone();
-      url.pathname = '/home';
-      return NextResponse.redirect(url);
-    }
   }
 
   return supabaseResponse;
