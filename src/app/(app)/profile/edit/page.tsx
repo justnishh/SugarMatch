@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/client";
-import { useGeolocation } from "@/lib/hooks/useGeolocation";
+import { useGeolocation } from "@/hooks/useGeolocation";
 import { toast } from "sonner";
 import type { UserProfile, Photo, ConditionTag } from "@/types/database";
 

@@ -65,14 +65,48 @@ export default function RegisterPage() {
             </div>
           </Link>
         </motion.div>
-      </div>
+       </div>
 
-      <p className="text-center text-muted-foreground mt-auto pt-8">
-        Already have an account?{" "}
-        <Link href="/login" className="text-rose-500 font-medium hover:underline">
-          Sign In
-        </Link>
-      </p>
+       {/* OAUTH BUTTONS */}
+       <div className="space-y-4">
+         <div className="text-center text-sm text-muted-foreground mb-4">
+           <span>Or continue with</span>
+         </div>
+         <div className="grid gap-3">
+           <a
+             href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v2/authorize?provider=google&redirect_to=${encodeURIComponent('/api/auth/callback')}&response_type=code`}
+             className="w-full flex items-center justify-center px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+           >
+             <div className="flex items-center gap-3">
+               {/* Google logo */}
+               <div className="flex-shrink-0">
+                 <img src="https://cdnjs.cloudflare.com/ajax/libs/simple-icons/7.14.0/google.svg" width="20" height="20" alt="Google" />
+               </div>
+               <span className="text-sm font-medium text-gray-900">Continue with Google</span>
+             </div>
+           </a>
+           
+           <a
+             href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v2/authorize?provider=facebook&redirect_to=${encodeURIComponent('/api/auth/callback')}&response_type=code`}
+             className="w-full flex items-center justify-center px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+           >
+             <div className="flex items-center gap-3">
+               {/* Facebook logo */}
+               <div className="flex-shrink-0">
+                 <img src="https://cdnjs.cloudflare.com/ajax/libs/simple-icons/7.14.0/facebook.svg" width="20" height="20" alt="Facebook" />
+               </div>
+               <span className="text-sm font-medium text-gray-900">Continue with Facebook</span>
+             </div>
+           </a>
+         </div>
+       </div>
+
+       <p className="text-center text-muted-foreground mt-auto pt-8">
+         Already have an account?{" "}
+         <Link href="/login" className="text-rose-500 font-medium hover:underline">
+           Sign In
+         </Link>
+       </p>
     </div>
   );
 }

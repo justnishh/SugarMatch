@@ -1,6 +1,6 @@
 "use client";
 
-import { useDeviceType } from "@/lib/hooks/useDeviceType";
+import { useDeviceType } from "@/hooks/useDeviceType";
 
 interface MobileViewProps {
   children: React.ReactNode;

@@ -1,4 +1,4 @@
-import { BottomNav } from "@/components/nav/BottomNav";
+import { BottomNav } from "@/components/layout/BottomNav";
 
 export default function AppLayout({
   children,

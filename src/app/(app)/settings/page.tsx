@@ -21,7 +21,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { createClient } from "@/lib/supabase/client";
-import { useGeolocation } from "@/lib/hooks/useGeolocation";
+import { useGeolocation } from "@/hooks/useGeolocation";
 import { toast } from "sonner";
 import type { UserProfile } from "@/types/database";
 

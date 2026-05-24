@@ -5,7 +5,7 @@ import { ArrowLeft, Crown, Heart, Eye, Star, Shield, Zap, Check, Loader2 } from 
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { usePremium } from "@/lib/hooks/usePremium";
+import { usePremium } from "@/hooks/usePremium";
 import { activatePremium } from "@/lib/premium";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";

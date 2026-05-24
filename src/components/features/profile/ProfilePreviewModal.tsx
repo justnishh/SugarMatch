@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { DiscoveryProfile } from "@/types/database";
-import { StatusIndicator } from "@/lib/hooks/usePresence";
+import { StatusIndicator } from "@/hooks/usePresence";
 
 interface ProfilePreviewModalProps {
   open: boolean;

@@ -2,7 +2,7 @@
 
 import { Bell, Heart, MessageCircle, Star, CheckCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRealtimeNotifications } from "@/lib/hooks/useRealtimeNotifications";
+import { useRealtimeNotifications } from "@/hooks/useRealtimeNotifications";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 

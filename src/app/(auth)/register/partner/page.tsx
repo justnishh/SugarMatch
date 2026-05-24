@@ -10,11 +10,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { StepIndicator } from "@/components/onboarding/StepIndicator";
-import { PhotoUploader } from "@/components/onboarding/PhotoUploader";
-import { ProfilePreview } from "@/components/onboarding/ProfilePreview";
+import { StepIndicator } from "@/components/features/onboarding/StepIndicator";
+import { PhotoUploader } from "@/components/features/onboarding/PhotoUploader";
+import { ProfilePreview } from "@/components/features/onboarding/ProfilePreview";
 import { createClient } from "@/lib/supabase/client";
-import { useGeolocation } from "@/lib/hooks/useGeolocation";
+import { useGeolocation } from "@/hooks/useGeolocation";
 import { toast } from "sonner";
 import type { Gender, ConditionTag } from "@/types/database";
 

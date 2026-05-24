@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/client";
 import { recordSwipe } from "@/lib/actions/swipe";
-import { usePremium } from "@/lib/hooks/usePremium";
+import { usePremium } from "@/hooks/usePremium";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import type { UserProfile, Photo } from "@/types/database";

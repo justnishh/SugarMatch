@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Settings, Edit, LogOut, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ProfileCard } from "@/components/profile/ProfileCard";
+import { ProfileCard } from "@/components/features/profile/ProfileCard";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";

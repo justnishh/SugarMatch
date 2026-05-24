@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Playfair_Display, Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
-import { AdBanner, SocialBar } from "@/components/ui/AdBanner";
+import { AdBanner, SocialBar } from "@/components/layout/AdBanner";
 import "./globals.css";
 
 const geistSans = Geist({

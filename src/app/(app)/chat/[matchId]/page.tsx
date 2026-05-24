@@ -11,9 +11,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { MessageBubble } from "@/components/chat/MessageBubble";
-import { ChatInput } from "@/components/chat/ChatInput";
-import { useRealtimeMessages } from "@/lib/hooks/useRealtimeMessages";
+import { MessageBubble } from "@/components/features/chat/MessageBubble";
+import { ChatInput } from "@/components/features/chat/ChatInput";
+import { useRealtimeMessages } from "@/hooks/useRealtimeMessages";
 import { sendMessage, markMessagesAsRead } from "@/lib/actions/chat";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";

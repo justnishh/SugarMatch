@@ -7,11 +7,11 @@ import { Heart, X, Star, SlidersHorizontal, Loader2, Sparkles, RefreshCw, Crown 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SwipeCard } from "@/components/discovery/SwipeCard";
-import { MatchModal } from "@/components/discovery/MatchModal";
+import { SwipeCard } from "@/components/features/discovery/SwipeCard";
+import { MatchModal } from "@/components/features/discovery/MatchModal";
 import { getDiscoveryFeed } from "@/lib/actions/discovery";
 import { recordSwipe } from "@/lib/actions/swipe";
-import { usePremium } from "@/lib/hooks/usePremium";
+import { usePremium } from "@/hooks/usePremium";
 import { useSuperLike } from "@/lib/premium";
 import { toast } from "sonner";
 import type { DiscoveryProfile } from "@/types/database";
